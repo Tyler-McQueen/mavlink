@@ -1,13 +1,13 @@
 #include <mavlink.h>
-#include <SoftwareSerial.h>
+//#include <SoftwareSerial.h>
  
 //#define RXpin 0
 //#define TXpin 1
-SoftwareSerial SerialMAV(9, 10); // sets up serial communication on pins 3 and 2
+//SoftwareSerial SerialMAV(2, 3); // sets up serial communication on pins 3 and 2
  
 void setup() {
   Serial.begin(57600); //Main serial port for console output
-  SerialMAV.begin(57600); //RXTX from Pixhawk (Port 19,18 Arduino Mega)
+  Serial2.begin(57600); //RXTX from Pixhawk (Port 19,18 Arduino Mega)
  
 request_datastream();
  
@@ -24,9 +24,9 @@ void MavLink_receive()
   mavlink_message_t msg;
   mavlink_status_t status;
  
-  while(SerialMAV.available())
+  while(Serial2.available())
   {
-    uint8_t c= SerialMAV.read();
+    uint8_t c= Serial2.read();
  
     //Get new message
     if(mavlink_parse_char(MAVLINK_COMM_0, c, &msg, &status))
@@ -90,5 +90,5 @@ void request_datastream() {
   mavlink_msg_request_data_stream_pack(_system_id, _component_id, &msg, _target_system, _target_component, _req_stream_id, _req_message_rate, _start_stop);
   uint16_t len = mavlink_msg_to_send_buffer(buf, &msg);  // Send the message (.write sends as bytes)
  
-  SerialMAV.write(buf, len); //Write data to serial port
+  Serial2.write(buf, len); //Write data to serial port
 }
